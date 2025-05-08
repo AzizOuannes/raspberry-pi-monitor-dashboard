@@ -7,8 +7,26 @@ const { exec } = require('child_process');
 const app = express();
 const port = 3000;
 
+// Serve static files from the 'public' folder
 app.use(express.static('public'));
 
+// Serve the live camera feed
+app.get('/camera', (req, res) => {
+  const cameraUrl = 'http://<raspberry-pi-ip>:8080/?action=stream';  // Replace with your actual IP
+  res.send(`
+    <html>
+      <head>
+        <title>Live Camera Feed</title>
+      </head>
+      <body>
+        <h1>Live Camera Feed</h1>
+        <img src="${cameraUrl}" alt="Live Camera Feed" />
+      </body>
+    </html>
+  `);
+});
+
+// Metrics route to fetch system info
 app.get('/metrics', async (req, res) => {
   osu.cpuUsage(cpu => {
     const rx = fs.readFileSync('/sys/class/net/wlan0/statistics/rx_bytes').toString().trim();
@@ -37,12 +55,12 @@ app.get('/metrics', async (req, res) => {
               wifiSignal
             });
           });
-          
       });
     });
   });
 });
 
+// Start server
 app.listen(port, () => {
   console.log(`Dashboard running at http://localhost:${port}`);
 });
