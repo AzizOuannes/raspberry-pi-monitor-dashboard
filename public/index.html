@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Raspberry Pi Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
   <div class="container">
@@ -18,6 +20,14 @@
       <div class="card"><strong>Wi-Fi Signal:</strong> <span id="wifiSignal">-</span> dBm</div>
     </div>
   </div>
+
+  <h2>Live Charts</h2>
+<div class="charts">
+  <canvas id="cpuChart"></canvas>
+  <canvas id="memChart"></canvas>
+  <canvas id="tempChart"></canvas>
+</div>
+
 
   <script>
     async function fetchMetrics() {
@@ -35,6 +45,61 @@
     }
     fetchMetrics();
     setInterval(fetchMetrics, 5000);
+
+    
+  const cpuData = { labels: [], datasets: [{ label: "CPU %", data: [], borderColor: "blue", fill: false }] };
+  const memData = { labels: [], datasets: [{ label: "Memory %", data: [], borderColor: "green", fill: false }] };
+  const tempData = { labels: [], datasets: [{ label: "Temp °C", data: [], borderColor: "red", fill: false }] };
+
+  const cpuChart = new Chart(document.getElementById('cpuChart'), { type: 'line', data: cpuData });
+  const memChart = new Chart(document.getElementById('memChart'), { type: 'line', data: memData });
+  const tempChart = new Chart(document.getElementById('tempChart'), { type: 'line', data: tempData });
+
+  function updateCharts(data) {
+    const time = new Date().toLocaleTimeString();
+
+    // Limit to last 20 points
+    [cpuData, memData, tempData].forEach(d => {
+      if (d.labels.length > 20) {
+        d.labels.shift();
+        d.datasets[0].data.shift();
+      }
+    });
+
+    cpuData.labels.push(time);
+    memData.labels.push(time);
+    tempData.labels.push(time);
+
+    cpuData.datasets[0].data.push(data.cpuUsage);
+    memData.datasets[0].data.push(data.memUsage);
+    tempData.datasets[0].data.push(parseFloat(data.cpuTemp));
+
+    cpuChart.update();
+    memChart.update();
+    tempChart.update();
+  }
+
+  async function fetchMetrics() {
+    const res = await fetch('/metrics');
+    const data = await res.json();
+
+    document.getElementById('cpuUsage').textContent = data.cpuUsage;
+    document.getElementById('cpuTemp').textContent = data.cpuTemp;
+    document.getElementById('memUsage').textContent = data.memUsage;
+    document.getElementById('diskFree').textContent = data.diskFree;
+    document.getElementById('diskTotal').textContent = data.diskTotal;
+    document.getElementById('uptime').textContent = data.uptime;
+    document.getElementById('rx').textContent = data.rxBytes;
+    document.getElementById('tx').textContent = data.txBytes;
+    document.getElementById('wifiSignal').textContent = data.wifiSignal;
+
+    updateCharts(data);
+  }
+
+  fetchMetrics();
+  setInterval(fetchMetrics, 5000);
+
+
   </script>
 </body>
 </html>
