@@ -6,16 +6,19 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>📊 Raspberry Pi Metrics Dashboard</h1>
-  <div id="metrics">
-    <div class="card">CPU Usage: <span id="cpuUsage">Loading...</span>%</div>
-    <div class="card">CPU Temp: <span id="cpuTemp"></span> °C</div>
-    <div class="card">Memory Usage: <span id="memUsage"></span>%</div>
-    <div class="card">Disk: <span id="diskFree"></span> / <span id="diskTotal"></span> GB</div>
-    <div class="card">Uptime: <span id="uptime"></span> mins</div>
-    <div class="card">RX: <span id="rx"></span> MB / TX: <span id="tx"></span> MB</div>
-    <div class="card">Wi-Fi Signal: <span id="wifiSignal"></span> dBm</div>
+  <div class="container">
+    <h1>📊 Raspberry Pi Metrics Dashboard</h1>
+    <div id="metrics">
+      <div class="card"><strong>CPU Usage:</strong> <span id="cpuUsage">Loading...</span>%</div>
+      <div class="card"><strong>CPU Temp:</strong> <span id="cpuTemp">-</span> °C</div>
+      <div class="card"><strong>Memory Usage:</strong> <span id="memUsage">-</span>%</div>
+      <div class="card"><strong>Disk Space:</strong> <span id="diskFree">-</span> / <span id="diskTotal">-</span> GB</div>
+      <div class="card"><strong>Uptime:</strong> <span id="uptime">-</span> mins</div>
+      <div class="card"><strong>Network RX:</strong> <span id="rx">-</span> MB<br><strong>TX:</strong> <span id="tx">-</span> MB</div>
+      <div class="card"><strong>Wi-Fi Signal:</strong> <span id="wifiSignal">-</span> dBm</div>
+    </div>
   </div>
+
   <script>
     async function fetchMetrics() {
       const res = await fetch('/metrics');
