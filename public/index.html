@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Raspberry Pi Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>📊 Raspberry Pi Metrics Dashboard</h1>
+  <div id="metrics">
+    <div class="card">CPU Usage: <span id="cpuUsage">Loading...</span>%</div>
+    <div class="card">CPU Temp: <span id="cpuTemp"></span> °C</div>
+    <div class="card">Memory Usage: <span id="memUsage"></span>%</div>
+    <div class="card">Disk: <span id="diskFree"></span> / <span id="diskTotal"></span> GB</div>
+    <div class="card">Uptime: <span id="uptime"></span> mins</div>
+    <div class="card">RX: <span id="rx"></span> MB / TX: <span id="tx"></span> MB</div>
+    <div class="card">Wi-Fi Signal: <span id="wifiSignal"></span> dBm</div>
+  </div>
+  <script>
+    async function fetchMetrics() {
+      const res = await fetch('/metrics');
+      const data = await res.json();
+      document.getElementById('cpuUsage').textContent = data.cpuUsage;
+      document.getElementById('cpuTemp').textContent = data.cpuTemp;
+      document.getElementById('memUsage').textContent = data.memUsage;
+      document.getElementById('diskFree').textContent = data.diskFree;
+      document.getElementById('diskTotal').textContent = data.diskTotal;
+      document.getElementById('uptime').textContent = data.uptime;
+      document.getElementById('rx').textContent = data.rxBytes;
+      document.getElementById('tx').textContent = data.txBytes;
+      document.getElementById('wifiSignal').textContent = data.wifiSignal;
+    }
+    fetchMetrics();
+    setInterval(fetchMetrics, 5000);
+  </script>
+</body>
+</html>
